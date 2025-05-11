@@ -1,14 +1,21 @@
+# ALBASTRO - DEBUGGING = ALBASTRO_FIXED
+# All codes are written by ALBASTRO, CANETE, YANEZ
+
 import streamlit as st
 import pandas as pd
 import altair as alt
+import numpy as np
 from datetime import date, timedelta
 from streamlit_extras.metric_cards import style_metric_cards
-from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LinearRegression
-from sklearn.metrics import mean_squared_error
-from sklearn.cluster import KMeans
+from sklearn.model_selection import train_test_split    # Train-Test Split
+from sklearn.linear_model import LinearRegression # Linear Regression
+from sklearn.metrics import mean_squared_error #K-means clustering
+from sklearn.cluster import KMeans #K-means clustering
+from sklearn.preprocessing import StandardScaler # StandardScaler
+import matplotlib.pyplot as plt # Matplotlib
+from sklearn.tree import DecisionTreeClassifier, plot_tree # Decision Tree
+from sklearn.inspection import permutation_importance # Decision Tree
 from sklearn.preprocessing import StandardScaler
-import matplotlib.pyplot as plt
 
 
 #page layout - YANEZ
@@ -105,7 +112,6 @@ with coll1:
  st.subheader("Target Percentage")
  Progressbar()
 
-
 #bar chart - ALBASTRO
 with coll2:
  st.subheader("Product OrderDate by Quantity")
@@ -116,8 +122,10 @@ with coll2:
  df = pd.DataFrame(data)
  st.bar_chart(df.set_index('Category')['Value'],use_container_width=True, width=600, height=600,)
 
+ #--------------------------------------------------------------------------------------------------------------------------
+
 # Machine Learning - Linear Regression -ALBASTRO
-st.subheader("📈 Sales Prediction using Machine Learning")
+st.title("📈 Sales Prediction using Machine Learning")
 
 # Select features and target - Yanez
 df_ml = df_selection[["Quantity", "TotalPrice"]]
@@ -151,34 +159,99 @@ if quantity_input:
 
 #--------------------------------------------------------------------------------------------------------------------------
 
-# --- 🔥 K-Means Clustering for Product Segmentation --- CANETE
-st.subheader("🔍 Product Clustering using K-Means")
+# Clustering - K-Means - ALBASTRO
+st.title("🔍 Product Clustering using K-Means")
 
 # Prepare features for clustering - CANETE
 df_cluster = df_selection[["Quantity", "TotalPrice"]]
 
-# Scale features (Standardizing ensures fair clustering) CANETE
+# Scale features (Standardizing ensures fair clustering) - CANETE
 scaler = StandardScaler()
 df_scaled = scaler.fit_transform(df_cluster)
 
-# Apply K-Means clustering - CANETE
-num_clusters = 3  # You can adjust this based on analysis - CANETE
-kmeans = KMeans(n_clusters=num_clusters, n_init=10, random_state=42)  # ✅ ALBASTRO - Explicitly set n_init to suppress warning
+# Apply K-Means clustering
+num_clusters = 3  # (ALBASTRO_FIXED) You can adjust this dynamically
+kmeans = KMeans(n_clusters=num_clusters, n_init=10, random_state=42)  
 df_selection["Cluster"] = kmeans.fit_predict(df_scaled)
 
-# Show clustered data - CANETE
+# Show clustered data with improved styling - CANETE
 st.write("🔍 Clustered Products:")
 styled_df = df_selection[["Product", "Quantity", "TotalPrice", "Cluster"]]
 
-# ✅ Apply styling without breaking clustering graph - CANETE
-st.dataframe(styled_df.style.set_properties(**{'width': '150px'}))
+# ✅ Improved DataFrame Styling with adjustable size (ALBASTRO_FIXED)
+st.dataframe(styled_df, height=600, width=900)  # Adjust height & width dynamically
 
-# Visualize Clusters with adjusted size - YANEZ
-fig, ax = plt.subplots(figsize=(10, 6))  # ✅ Adjusted figure size - ALBASTRO
-scatter = ax.scatter(df_selection["Quantity"], df_selection["TotalPrice"], c=df_selection["Cluster"], cmap="viridis", alpha=0.6)
+# Visualize Clusters with adjusted size - ALBASTRO
+fig, ax = plt.subplots(figsize=(10, 6))  # Adjusted figure size
+scatter = ax.scatter(df_selection["Quantity"], df_selection["TotalPrice"], 
+                     c=df_selection["Cluster"], cmap="viridis", alpha=0.6)
 ax.set_xlabel("Quantity Sold")
 ax.set_ylabel("Total Price")
 ax.set_title("K-Means Clustering of Products")
 
 # Show plot in Streamlit - CANETE
 st.pyplot(fig)
+
+#--------------------------------------------------- OPTIONAL --------------------------------------------------------------------
+# Decision Tree Classifier - ALBASTRO - NOT SURE IF THIS WILL BE ADDED TO THE FINAL VERSION SINCE DATA FROM THE CUSTOMER
+# IS CONFIDENTIAL AND WE DON'T HAVE THE DATASET YET (STILL BEING NEGOTIATED)
+
+# ✅ Load dataset (Use your uploaded food sales file)
+df = pd.read_excel("foodsales.xlsx", sheet_name="FoodSales")
+
+# ✅ Remove extra spaces from column names
+df.columns = df.columns.str.strip()
+
+# ✅ Drop unnecessary columns: "Target" and "Unnamed: 8"
+df = df.drop(columns=["Target", "Unnamed: 8"], errors="ignore")
+
+# ✅ Handle missing values in 'Region'
+df["Region"].fillna("Unknown", inplace=True)
+
+# ✅ Convert categorical columns to numerical (Encoding)
+df_ml = df.copy()
+
+# ✅ Encoding Fix: Use categorical encoding instead of one-hot encoding for Region
+df_ml["Region_encoded"] = pd.Categorical(df_ml["Region"]).codes  # Proper encoding without dropping column
+
+# ✅ Standardize Quantity, TotalPrice, and UnitPrice for better feature weighting
+scaler = StandardScaler()
+df_ml[["Quantity", "TotalPrice", "UnitPrice"]] = scaler.fit_transform(df_ml[["Quantity", "TotalPrice", "UnitPrice"]])
+
+# ✅ Define Features and Target for Decision Tree (Expanded Purchase Trends)
+X_trend = df_ml[["Quantity", "TotalPrice", "Region_encoded", "UnitPrice"]]  # Adding unit price for more granularity
+y_trend = np.where(df_ml["TotalPrice"] > df_ml["TotalPrice"].median(), 1, 0)  # 1 for high-price, 0 for low-price
+
+# ✅ Splitting data properly
+X_train_trend, X_test_trend, y_train_trend, y_test_trend = train_test_split(X_trend, y_trend, test_size=0.2, random_state=42)
+
+# ✅ Initialize and Train Random Forest for Purchase Trends (Better than Single Tree)
+rf_trend = RandomForestClassifier(n_estimators=100, max_depth=15)  # Increased depth for better complexity
+rf_trend.fit(X_train_trend, y_train_trend)
+
+# ✅ Calculate Feature Importance (to verify if Quantity and Region are relevant)
+importance_rf = permutation_importance(rf_trend, X_test_trend, y_test_trend)
+feature_importance = dict(zip(X_trend.columns, importance_rf.importances_mean))
+
+# ✅ Streamlit App Setup
+st.title("📊 Random Forest Analysis for Purchase Trends")
+
+# ✅ Display Dataset Preview
+st.subheader("📌 Dataset Preview")
+st.dataframe(df.head())
+
+# ✅ Display Feature Importance
+st.subheader("🔎 Feature Importance")
+st.write(feature_importance)  # Shows which features matter most in the decision-making process
+
+# ✅ Visualizing Random Forest Decision Tree (Display 1 tree from the ensemble)
+fig, ax = plt.subplots(figsize=(12, 6))
+
+plot_tree(rf_trend.estimators_[0], feature_names=X_trend.columns, filled=True, ax=ax)  # Showing a single tree from Random Forest
+ax.set_title("Random Forest: Expanded Purchase Trends Prediction")
+
+# ✅ Display Visualization in Streamlit
+st.subheader("🌳 Purchase Trends Random Forest Visualization")
+st.pyplot(fig)
+
+#--------------------------------------------------- OPTIONAL --------------------------------------------------------------------

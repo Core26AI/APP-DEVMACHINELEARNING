@@ -113,3 +113,4 @@ validators==0.22.0
 visions==0.7.4
 watchdog==3.0.0
 zipp==3.17.0
+prophet==1.1.1

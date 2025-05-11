@@ -1,37 +1,39 @@
-/* Made by Canete */
+/* Made by Canete - Updated with Improvements */
 
+/* Improve metric container styling */
 [data-testid=metric-container] {
-    box-shadow: 0 0 1px #044f4f;
-    padding: 1px;
+    box-shadow: 0 0 2px #044f4f;
+    padding: 4px;
     color: rgb(255, 255, 255);
     overflow-wrap: break-word;
     white-space: break-spaces;
-    font-size: 100%;
+    font-size: 105%;
 }
 
+/* Improve plot visualization */
 .plot-container > div {
-    box-shadow: 0 0 5px #140e0e;
-    padding: 3px;
+    box-shadow: 0 0 6px #140e0e;
+    padding: 5px;
     border-width: 3px;
 }
 
 /* Adjust font size for DataFrame buttons */
 div[data-testid="stDataframe"] div[role="button"] p {
-    font-size: 1.3rem;
+    font-size: 1.4rem;
     color: rgb(1, 84, 84);
 }
 
-/* Adjust DataFrame size */
+/* Enhanced DataFrame Styling */
 div[data-testid="stDataframe"] {
-    max-width: 900px; /* Adjust this value */
-    overflow: auto; /* Enables horizontal scrolling if needed */
-    padding: 5px;
-    box-shadow: 0 0 5px #044f4f;
+    max-width: 100%;
+    overflow: auto;
+    padding: 10px;
+    box-shadow: 0 0 6px #044f4f;
 }
 
 /* Improve table readability */
 .dataframe-container {
     background-color: #f8f9fa;
     border-radius: 8px;
-    padding: 10px;
+    padding: 12px;
 }
