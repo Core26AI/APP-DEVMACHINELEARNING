@@ -1,6 +1,6 @@
 /* Made by Canete - Updated with Improvements */
 
-/* Improve metric container styling */
+/* ✅ Improve metric container styling */
 [data-testid=metric-container] {
     box-shadow: 0 0 2px #044f4f;
     padding: 4px;
@@ -10,30 +10,38 @@
     font-size: 105%;
 }
 
-/* Improve plot visualization */
+/* ✅ Improve plot visualization */
 .plot-container > div {
     box-shadow: 0 0 6px #140e0e;
     padding: 5px;
     border-width: 3px;
 }
 
-/* Adjust font size for DataFrame buttons */
+/* ✅ Adjust font size for DataFrame buttons */
 div[data-testid="stDataframe"] div[role="button"] p {
-    font-size: 1.4rem;
+    font-size: 1.6rem; /* 🔹 Slightly larger button text */
     color: rgb(1, 84, 84);
 }
 
-/* Enhanced DataFrame Styling */
+/* ✅ Enhanced DataFrame Styling */
 div[data-testid="stDataframe"] {
     max-width: 100%;
     overflow: auto;
     padding: 10px;
     box-shadow: 0 0 6px #044f4f;
+    white-space: nowrap; /* 🔹 Ensures long values don't break the table */
 }
 
-/* Improve table readability */
+/* ✅ Improve table readability */
 .dataframe-container {
-    background-color: #f8f9fa;
-    border-radius: 8px;
-    padding: 12px;
+    background-color: #ffffff; /* 🔹 Changed to white for better contrast */
+    border-radius: 10px; /* 🔹 Rounded corners */
+    padding: 15px; /* 🔹 Slightly larger padding */
+    box-shadow: 0 0 8px #044f4f; /* 🔹 Enhanced shadow */
+    overflow: auto; /* 🔹 Fixes table content overflow */
+}
+
+/* ✅ Improve Progress Bar styling */
+.stProgress > div > div > div > div {
+    background-image: linear-gradient(to right, #99ff99, #FFFF00); /* 🔹 Gradient color */
 }
