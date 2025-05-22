@@ -16,6 +16,7 @@ import matplotlib.pyplot as plt # Matplotlib
 from sklearn.tree import DecisionTreeClassifier, plot_tree # Decision Tree
 from sklearn.inspection import permutation_importance # Decision Tree
 from sklearn.preprocessing import StandardScaler
+from sklearn.ensemble import RandomForestClassifier
 
 
 #page layout - YANEZ
